@@ -1,0 +1,13 @@
+{
+  "version": "0.2.1",
+  "configurations": [
+    {
+      "type": "cppgdb",
+      "project": "CMakeLists.txt",
+      "projectTarget": "MidiMediator",
+      "name": "MidiMediator --list",
+      "debuggerConfiguration": "gdb",
+      "args": [ "--list" ]
+    }
+  ]
+}
