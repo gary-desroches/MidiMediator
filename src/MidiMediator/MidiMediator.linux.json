@@ -4,28 +4,28 @@
   "deviceMaps": [
     {
       "name": "Electro-Harmonix Super Switcher",
-      "input": "USB Uno MIDI Interface",
-      "outputs": [ "USB Uno MIDI Interface" ],
-      "input_linux": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
-      "outputs_linux": [ "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1" ],
+      "input_windows": "USB Uno MIDI Interface",
+      "outputs_windows": [ "USB Uno MIDI Interface" ],
+      "input": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
+      "outputs": [ "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1" ],
       "passthrough": true,
       "commandMaps": []
     },
     {
       "name": "Empress Reverb",
-      "input": "USB Uno MIDI Interface",
-      "outputs": [ "MIDIPLUS TBOX 2x2" ],
-      "input_linux": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
-      "outputs_linux": [ "MIDIPLUS TBOX 2x2:MIDIPLUS TBOX 2x2 Midi Out 1" ],
+      "input_windows": "USB Uno MIDI Interface",
+      "outputs_windows": [ "MIDIPLUS TBOX 2x2" ],
+      "input": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
+      "outputs": [ "MIDIPLUS TBOX 2x2:MIDIPLUS TBOX 2x2 Midi Out 1" ],
       "passthrough": true,
       "commandMaps": []
     },
     {
       "name": "Voodoo Lab Pedal Switcher 1",
-      "input": "USB Uno MIDI Interface",
-      "outputs": [ "MIDIOUT2 (MIDIPLUS TBOX 2x2)" ],
-      "input_linux": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
-      "outputs_linux": [ "MIDIPLUS TBOX 2x2:MIDIPLUS TBOX 2x2 Midi Out 2" ],
+      "input_windows": "USB Uno MIDI Interface",
+      "outputs_windows": [ "MIDIOUT2 (MIDIPLUS TBOX 2x2)" ],
+      "input": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
+      "outputs": [ "MIDIPLUS TBOX 2x2:MIDIPLUS TBOX 2x2 Midi Out 2" ],
       "passthrough": false,
       "commandMaps": [
         {
@@ -112,10 +112,10 @@
     },
     {
       "name": "Voodoo Lab Pedal Switcher 2",
-      "input": "USB Uno MIDI Interface",
-      "outputs": [ "USB Midi" ],
-      "input_linux": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
-      "outputs_linux": [ "USB Midi:USB Midi MIDI 1" ],
+      "input_windows": "USB Uno MIDI Interface",
+      "outputs_windows": [ "USB Midi" ],
+      "input": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
+      "outputs": [ "USB Midi:USB Midi MIDI 1" ],
       "passthrough": false,
       "commandMaps": [
         {

@@ -25,6 +25,8 @@ protected:
 public:
     std::string const& deviceName() const;
     uint8_t port() const;
+    std::string uniqueDeviceName() const;
+    bool compareName(std::string const& comparison, bool matchUnique);
 
 private:
     RtMidi& m_midi;

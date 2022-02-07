@@ -22,6 +22,7 @@ public:
 public:
     std::vector<MidiDeviceMapping> const& deviceMaps() const;
     uint32_t queueSizeLimit() const;
+    bool matchUniqueDeviceNames() const;
 
 private:
     void initialize();
@@ -33,5 +34,6 @@ private:
     std::string const m_configPath;
     bool m_initialized;
     uint32_t m_queueSizeLimit;
+    bool m_matchUniqueDeviceNames;
     std::vector<MidiDeviceMapping> m_deviceMaps;
 };

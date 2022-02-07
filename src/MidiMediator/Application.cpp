@@ -11,7 +11,7 @@
 	std::string const Application::ConfigPath = "MidiMediator.json";
 #elif defined(TARGET_OS_MAC)
 	RtMidi::Api const Application::Api = RtMidi::MACOSX_CORE;
-	std::string const Application::ApiName = "MacOSX Core";
+	std::string const Application::ApiName = "MacOS X Core";
 	std::string const Application::ConfigPath = "/etc/MidiMediator.json";
 #else
 	RtMidi::Api const Application::Api = RtMidi::LINUX_ALSA;
@@ -66,6 +66,8 @@ void Application::listPorts()
 	}
 }
 
+std::string trimNumericSuffix(std::string const& deviceName);
+
 int Application::run()
 {
 	std::cout << "Using " << ApiName << " as the MIDI API." << std::endl;
@@ -81,7 +83,7 @@ int Application::run()
 			}
 		}
 
-		MidiDeviceMapper mapper(Api, m_config.queueSizeLimit(), m_config.deviceMaps());
+		MidiDeviceMapper mapper(Api, m_config.queueSizeLimit(), m_config.deviceMaps(), m_config.matchUniqueDeviceNames());
 		mapper.listen();
 	}
 	catch (RtMidiError& error)

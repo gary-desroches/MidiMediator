@@ -29,7 +29,9 @@ protected:
     RtMidi& midi() const;
     void setMidiPtr(RtMidi* rtMidi);
     std::string const& deviceName() const;
+    std::string uniqueDeviceName() const;
     std::string const& configName() const;
+    bool compareName(std::string const& comparison, bool matchUnique);
 
 private:
     RtMidi* m_rtMidi;

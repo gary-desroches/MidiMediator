@@ -7,11 +7,12 @@
 #include <sstream>
 #include <thread>
 
-MidiDeviceMapper::MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps) :
+MidiDeviceMapper::MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps, bool matchUniqueDeviceNames) :
 	m_api(api),
 	m_queueSizeLimit(queueSizeLimit),
 	m_deviceMaps(deviceMaps),
-	m_initialized(false)
+	m_initialized(false),
+	m_matchUniqueDeviceNames(matchUniqueDeviceNames)
 {
 }
 
@@ -186,6 +187,8 @@ void MidiDeviceMapper::logMessage(std::string const& deviceName, MessageDirectio
 	std::cout << std::string("]") << std::endl;
 }
 
+std::string trimNumericSuffix(std::string const& deviceName);
+
 void MidiDeviceMapper::sendMessageToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes)
 {
 	MidiMessage message(messageBytes);
@@ -195,7 +198,7 @@ void MidiDeviceMapper::sendMessageToDevices(MidiDeviceMapping const& deviceMap, 
 		{
 			for (auto&& outputPort : m_outputPorts)
 			{
-				if (boost::iequals(outputPort.deviceName(), outputDeviceName))
+				if (outputPort.compareName(outputDeviceName, m_matchUniqueDeviceNames))
 				{
 					logMessage(outputPort.deviceName(), MessageDirection::Sent, message);
 					outputPort.send(message);
@@ -218,6 +221,8 @@ void MidiDeviceMapper::sendMessageToDevices(MidiDeviceMapping const& deviceMap, 
 	}
 }
 
+std::string trimNumericSuffix(std::string const& deviceName);
+
 void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double const /*timeStamp*/, std::vector<uint8_t> const& messageBytes)
 {
 	try
@@ -226,7 +231,7 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 		logMessage(inputMidiPort.deviceName(), MessageDirection::Received, message);
 		for (auto&& deviceMap : m_deviceMaps)
 		{
-			if (boost::iequals(deviceMap.inputDeviceName(), inputMidiPort.deviceName()))
+			if (inputMidiPort.compareName(deviceMap.inputDeviceName(), m_matchUniqueDeviceNames))
 			{
 				if (deviceMap.passthrough())
 				{

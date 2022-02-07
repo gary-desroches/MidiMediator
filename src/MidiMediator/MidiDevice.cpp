@@ -3,12 +3,24 @@
 
 #include <sstream>
 #include <boost/algorithm/string/predicate.hpp>
+#include <cctype>
 
 MidiDevice::MidiDevice(std::string const& deviceName, std::string const& configName) :
     m_rtMidi(nullptr),
     m_deviceName(deviceName),
 	m_configName(configName)
 {
+}
+
+std::string trimNumericSuffix(std::string const& deviceName)
+{
+	auto it = deviceName.end() - 1;
+	while (it > deviceName.begin() && *it != ' ')
+	{
+		--it;
+	}
+
+	return std::string(deviceName.begin(), it);
 }
 
 [[nodiscard]] uint8_t MidiDevice::findPortNumber()
@@ -67,4 +79,23 @@ MidiDevice& MidiDevice::operator=(MidiDevice&& source) noexcept
 void MidiDevice::setMidiPtr(RtMidi* rtMidi)
 {
 	m_rtMidi = rtMidi;
+}
+
+std::string trimNumericSuffix(std::string const& deviceName);
+
+std::string MidiDevice::uniqueDeviceName() const
+{
+	return trimNumericSuffix(m_deviceName);
+}
+
+bool MidiDevice::compareName(std::string const& comparison, bool matchUnique)
+{
+	if (matchUnique)
+	{
+		return boost::iequals(m_deviceName, comparison);
+	}
+	else
+	{
+		return boost::iequals(trimNumericSuffix(m_deviceName), comparison);
+	}
 }

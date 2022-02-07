@@ -13,7 +13,8 @@
 
 Configuration::Configuration(std::string const& configPath) :
     m_configPath(configPath),
-    m_initialized(false)
+    m_initialized(false),
+	m_matchUniqueDeviceNames(false)
 {
 	initialize();
 }
@@ -252,6 +253,7 @@ void Configuration::initialize()
 		json11::Json json = readJsonFromFile();
 
 		m_queueSizeLimit = std::atoi(getJsonValue(json, "queueSizeLimit").c_str());
+		m_matchUniqueDeviceNames = boost::iequals(getJsonValue(json, "matchUniqueDeviceNames"), "true");
 		auto deviceMaps = getJsonArray(json, "deviceMaps");
 		m_deviceMaps.reserve(deviceMaps.array_items().size());
 		for (auto&& deviceMap : deviceMaps.array_items())
@@ -276,4 +278,9 @@ std::vector<MidiDeviceMapping> const& Configuration::deviceMaps() const
 uint32_t Configuration::queueSizeLimit() const
 {
 	return m_queueSizeLimit;
+}
+
+bool Configuration::matchUniqueDeviceNames() const
+{
+	return m_matchUniqueDeviceNames;
 }
