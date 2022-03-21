@@ -9,7 +9,6 @@
       "input_linux": "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1",
       "outputs_linux": [ "USB Uno MIDI Interface:USB Uno MIDI Interface MIDI 1" ],
       "passthrough": true,
-      "multiMessageSendDelay": 0,
       "commandMaps": [
         {
           "in": "192,19",
