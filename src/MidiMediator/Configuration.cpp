@@ -123,6 +123,22 @@ static std::string getJsonValue(json11::Json const& node, std::string const& nam
 	return value;
 }
 
+static int32_t getJsonInt32Value(json11::Json const& node, std::string const& name)
+{
+	std::string value;
+	if (!tryGetJsonValue(node, name, value))
+	{
+		std::stringstream errorMessage;
+		errorMessage << __PRETTY_FUNCTION__ << ": JSON node does not contain value named \"" << name << "\".";
+		throw std::logic_error(errorMessage.str());
+	}
+
+	size_t pos = 0;
+	int32_t numericValue = std::stoi(value, &pos, 10);
+
+	return static_cast<int32_t>(numericValue);
+}
+
 static json11::Json getJsonArray(json11::Json const& node, std::string const& name)
 {
 	json11::Json value;
@@ -201,9 +217,15 @@ MidiDeviceMapping::command_map_t Configuration::parseCommandMaps(json11::Json co
 				continue;
 			}
 
-			commandMaps.push_back(std::pair< std::vector<uint8_t>, std::vector<uint8_t> >());
+			commandMaps.push_back(std::pair< std::vector<uint8_t>, std::vector< std::vector<uint8_t> > >());
 			splitToNumbers(getJsonValue(commandNode, "in"), commandMaps.back().first);
-			splitToNumbers(getJsonValue(commandNode, "out"), commandMaps.back().second);
+			
+			auto outNodeArray = getJsonArray(commandNode, "out");
+			for (auto&& outNode : outNodeArray.array_items())
+			{
+				commandMaps.back().second.push_back({ });
+				splitToNumbers(outNode.string_value(), commandMaps.back().second.back());
+			}
 		}
 
 		return commandMaps;
@@ -230,9 +252,10 @@ void Configuration::parseDeviceMap(json11::Json const& deviceMap)
 		}
 
 		bool passthrough = boost::iequals(getJsonValue(deviceMap, "passthrough"), "true");
+		int32_t multiMessageSendDelay = getJsonInt32Value(deviceMap, "multiMessageSendDelay");
 		auto commandMaps = parseCommandMaps(deviceMap);
 
-		m_deviceMaps.push_back(MidiDeviceMapping(name, inputDeviceName, outputDeviceNames, passthrough, commandMaps));
+		m_deviceMaps.push_back(MidiDeviceMapping(name, inputDeviceName, outputDeviceNames, passthrough, multiMessageSendDelay, commandMaps));
 	}
 	catch (...)
 	{
