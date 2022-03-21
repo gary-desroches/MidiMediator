@@ -1,11 +1,12 @@
 #include "pch.hpp"
 #include "MidiDeviceMapping.hpp"
 
-MidiDeviceMapping::MidiDeviceMapping(std::string const& name, std::string const& inputDeviceName, std::vector<std::string> const& outputDeviceNames, bool passthrough, command_map_t const& commandMaps) :
+MidiDeviceMapping::MidiDeviceMapping(std::string const& name, std::string const& inputDeviceName, std::vector<std::string> const& outputDeviceNames, bool passthrough, int32_t multiMessageSendDelay, command_map_t const& commandMaps) :
 	m_name(name),
 	m_inputDeviceName(inputDeviceName),
 	m_outputDeviceNames(outputDeviceNames),
 	m_passthrough(passthrough),
+	m_multiMessageSendDelay(multiMessageSendDelay),
 	m_commandMaps(commandMaps)
 {
 }

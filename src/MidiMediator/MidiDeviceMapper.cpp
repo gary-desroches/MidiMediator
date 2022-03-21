@@ -189,7 +189,7 @@ void MidiDeviceMapper::logMessage(std::string const& deviceName, MessageDirectio
 
 std::string trimNumericSuffix(std::string const& deviceName);
 
-void MidiDeviceMapper::sendMessageToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes)
+void MidiDeviceMapper::sendMessagesToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes)
 {
 	if (messageBytes.size() == 0)
 	{
@@ -239,7 +239,7 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 		{
 			if (inputMidiPort.compareName(deviceMap.inputDeviceName(), m_matchUniqueDeviceNames))
 			{
-				bool messageSent = false;
+				bool messagesSent = false;
 				for (auto&& commandMap : deviceMap.commandMaps())
 				{
 					if (std::equal(commandMap.first.begin(), commandMap.first.end(), messageBytes.begin()))
@@ -249,15 +249,26 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 							std::cout << "Exception to passthrough found.\n";
 						}
 
-						sendMessageToDevices(deviceMap, commandMap.second);
-						messageSent = true;
+						auto lastIt = std::prev(commandMap.second.end());
+						bool moreThanOne = commandMap.second.size() > 1;
+						for (auto outMessageBytes = commandMap.second.begin(); outMessageBytes != commandMap.second.end(); ++outMessageBytes)
+						{
+							sendMessagesToDevices(deviceMap, *outMessageBytes);
+
+							if (outMessageBytes != lastIt && moreThanOne)
+							{
+								std::this_thread::sleep_for(std::chrono::milliseconds(m_matchUniqueDeviceNames));
+							}
+						}
+
+						messagesSent = true;
 					}
 				}
 
-				if (deviceMap.passthrough() && !messageSent)
+				if (deviceMap.passthrough() && !messagesSent)
 				{
 					std::cout << "Passing through...\n";
-					sendMessageToDevices(deviceMap, messageBytes);
+					sendMessagesToDevices(deviceMap, messageBytes);
 				}
 			}
 		}

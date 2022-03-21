@@ -20,7 +20,7 @@ private:
 	void findDevices();
 	void openPorts();
 	void logMessage(std::string const& deviceName, MessageDirection direction, MidiMessage const& message);
-	void sendMessageToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes);
+	void sendMessagesToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes);
 	void onIncomingMessage(InputMidiPort& inputMidiPort, double const timeStamp, std::vector<uint8_t> const& messageBytes);
 
 private:
