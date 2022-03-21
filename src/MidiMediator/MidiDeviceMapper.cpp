@@ -191,6 +191,12 @@ std::string trimNumericSuffix(std::string const& deviceName);
 
 void MidiDeviceMapper::sendMessageToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes)
 {
+	if (messageBytes.size() == 0)
+	{
+		std::cout << "Cannot send empty message.  Skipping...\n";
+		return;
+	}
+
 	MidiMessage message(messageBytes);
 	for (auto&& outputDeviceName : deviceMap.outputDeviceNames())
 	{
@@ -233,20 +239,25 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 		{
 			if (inputMidiPort.compareName(deviceMap.inputDeviceName(), m_matchUniqueDeviceNames))
 			{
-				if (deviceMap.passthrough())
+				bool messageSent = false;
+				for (auto&& commandMap : deviceMap.commandMaps())
+				{
+					if (std::equal(commandMap.first.begin(), commandMap.first.end(), messageBytes.begin()))
+					{
+						if (deviceMap.passthrough())
+						{
+							std::cout << "Exception to passthrough found.\n";
+						}
+
+						sendMessageToDevices(deviceMap, commandMap.second);
+						messageSent = true;
+					}
+				}
+
+				if (deviceMap.passthrough() && !messageSent)
 				{
 					std::cout << "Passing through...\n";
 					sendMessageToDevices(deviceMap, messageBytes);
-				}
-				else
-				{
-					for (auto&& commandMap : deviceMap.commandMaps())
-					{
-						if (std::equal(commandMap.first.begin(), commandMap.first.end(), messageBytes.begin()))
-						{
-							sendMessageToDevices(deviceMap, commandMap.second);
-						}
-					}
 				}
 			}
 		}
