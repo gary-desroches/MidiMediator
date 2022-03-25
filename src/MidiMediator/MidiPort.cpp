@@ -86,6 +86,7 @@ bool MidiPort::compareName(std::string const& comparison, bool matchUnique)
 	}
 	else
 	{
-		return boost::iequals(trimNumericSuffix(m_name), comparison);
+		auto trimmedName = trimNumericSuffix(m_name);
+		return boost::iequals(trimmedName, comparison);
 	}
 }

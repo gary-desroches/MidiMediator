@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <cctype>
 
 MidiDevice::MidiDevice(std::string const& deviceName, std::string const& configName) :
@@ -20,7 +21,10 @@ std::string trimNumericSuffix(std::string const& deviceName)
 		--it;
 	}
 
-	return std::string(deviceName.begin(), it);
+	auto trimmed(std::string(deviceName.begin(), it));
+	boost::trim_right(trimmed);
+
+	return trimmed;
 }
 
 [[nodiscard]] uint8_t MidiDevice::findPortNumber()

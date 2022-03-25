@@ -11,6 +11,17 @@
 #include <memory>
 #include <boost/algorithm/string.hpp>
 
+#if defined(WIN32)
+	const std::string Configuration::InputFieldName = "input_windows";
+	const std::string Configuration::OutputsFieldName = "outputs_windows";
+#elif defined(TARGET_OS_MAC)
+	const std::string Configuration::InputFieldName = "input_macos";
+	const std::string Configuration::OutputsFieldName = "outputs_macos";
+#else
+	const std::string Configuration::InputFieldName = "input_linux";
+	const std::string Configuration::OutputsFieldName = "outputs_linux";
+#endif
+
 Configuration::Configuration(std::string const& configPath) :
     m_configPath(configPath),
     m_initialized(false),
@@ -156,6 +167,11 @@ static void splitToNumbers(std::string const text, std::vector<uint8_t>& numbers
 {
 	try
 	{
+		if (text.size() == 0)
+		{
+			return;
+		}
+
 		std::vector<std::string> parts;
 		boost::split(parts, text, boost::is_any_of(","));
 		numbers.resize(parts.size());
@@ -217,14 +233,28 @@ MidiDeviceMapping::command_map_t Configuration::parseCommandMaps(json11::Json co
 				continue;
 			}
 
-			commandMaps.push_back(std::pair< std::vector<uint8_t>, std::vector< std::vector<uint8_t> > >());
+			commandMaps.push_back(
+				std::pair<
+					std::vector<uint8_t>,
+					RevolvingCollection<
+						std::vector<
+							std::vector<uint8_t>
+						>
+					>
+				>()
+			);
+
 			splitToNumbers(getJsonValue(commandNode, "in"), commandMaps.back().first);
 			
 			auto outNodeArray = getJsonArray(commandNode, "out");
 			for (auto&& outNode : outNodeArray.array_items())
 			{
-				commandMaps.back().second.push_back({ });
-				splitToNumbers(outNode.string_value(), commandMaps.back().second.back());
+				commandMaps.back().second.push_back({});
+				for (auto&& outMessagesNode : outNode.array_items())
+				{
+					commandMaps.back().second.back().push_back({});
+					splitToNumbers(outMessagesNode.string_value(), commandMaps.back().second.back().back());
+				}
 			}
 		}
 
@@ -242,8 +272,8 @@ void Configuration::parseDeviceMap(json11::Json const& deviceMap)
 	try
 	{
 		auto name = getJsonValue(deviceMap, "name");
-		auto inputDeviceName = getJsonValue(deviceMap, "input");
-		auto outputDeviceNamesNode = getJsonArray(deviceMap, "outputs");
+		auto inputDeviceName = getJsonValue(deviceMap, InputFieldName);
+		auto outputDeviceNamesNode = getJsonArray(deviceMap, OutputsFieldName);
 		std::vector<std::string> outputDeviceNames;
 		outputDeviceNames.reserve(outputDeviceNamesNode.array_items().size());
 		for (auto&& outputDeviceNode : outputDeviceNamesNode.array_items())

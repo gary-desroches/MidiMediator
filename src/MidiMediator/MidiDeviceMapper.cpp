@@ -249,19 +249,23 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 							std::cout << "Exception to passthrough found.\n";
 						}
 
-						auto lastIt = std::prev(commandMap.second.end());
-						bool moreThanOne = commandMap.second.size() > 1;
-						for (auto outMessageBytes = commandMap.second.begin(); outMessageBytes != commandMap.second.end(); ++outMessageBytes)
+						const auto outputMessages = commandMap.second.next();
+						std::vector< std::vector<uint8_t> >::const_iterator lastIt =
+							std::prev(outputMessages.end());
+
+						const bool moreThanOne = outputMessages.size() > 1;
+						for (auto outMessageBytes = outputMessages.begin(); outMessageBytes != outputMessages.end(); ++outMessageBytes)
 						{
 							sendMessagesToDevices(deviceMap, *outMessageBytes);
 
 							if (outMessageBytes != lastIt && moreThanOne)
 							{
-								std::this_thread::sleep_for(std::chrono::milliseconds(m_matchUniqueDeviceNames));
+								std::this_thread::sleep_for(std::chrono::milliseconds(deviceMap.multiMessageSendDelay()));
 							}
 						}
 
 						messagesSent = true;
+						break;
 					}
 				}
 

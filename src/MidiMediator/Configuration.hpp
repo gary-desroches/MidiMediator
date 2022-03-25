@@ -36,4 +36,7 @@ private:
     uint32_t m_queueSizeLimit;
     bool m_matchUniqueDeviceNames;
     std::vector<MidiDeviceMapping> m_deviceMaps;
+
+    static std::string const InputFieldName;
+    static std::string const OutputsFieldName;
 };
