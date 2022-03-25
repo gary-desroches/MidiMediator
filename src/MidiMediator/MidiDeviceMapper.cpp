@@ -189,8 +189,14 @@ void MidiDeviceMapper::logMessage(std::string const& deviceName, MessageDirectio
 
 std::string trimNumericSuffix(std::string const& deviceName);
 
-void MidiDeviceMapper::sendMessageToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes)
+void MidiDeviceMapper::sendMessagesToDevices(MidiDeviceMapping const& deviceMap, std::vector<uint8_t> const& messageBytes)
 {
+	if (messageBytes.size() == 0)
+	{
+		std::cout << "Cannot send empty message.  Skipping...\n";
+		return;
+	}
+
 	MidiMessage message(messageBytes);
 	for (auto&& outputDeviceName : deviceMap.outputDeviceNames())
 	{
@@ -233,20 +239,40 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 		{
 			if (inputMidiPort.compareName(deviceMap.inputDeviceName(), m_matchUniqueDeviceNames))
 			{
-				if (deviceMap.passthrough())
+				bool messagesSent = false;
+				for (auto&& commandMap : deviceMap.commandMaps())
+				{
+					if (std::equal(commandMap.first.begin(), commandMap.first.end(), messageBytes.begin()))
+					{
+						if (deviceMap.passthrough())
+						{
+							std::cout << "Exception to passthrough found.\n";
+						}
+
+						const auto outputMessages = commandMap.second.next();
+						std::vector< std::vector<uint8_t> >::const_iterator lastIt =
+							std::prev(outputMessages.end());
+
+						const bool moreThanOne = outputMessages.size() > 1;
+						for (auto outMessageBytes = outputMessages.begin(); outMessageBytes != outputMessages.end(); ++outMessageBytes)
+						{
+							sendMessagesToDevices(deviceMap, *outMessageBytes);
+
+							if (outMessageBytes != lastIt && moreThanOne)
+							{
+								std::this_thread::sleep_for(std::chrono::milliseconds(deviceMap.multiMessageSendDelay()));
+							}
+						}
+
+						messagesSent = true;
+						break;
+					}
+				}
+
+				if (deviceMap.passthrough() && !messagesSent)
 				{
 					std::cout << "Passing through...\n";
-					sendMessageToDevices(deviceMap, messageBytes);
-				}
-				else
-				{
-					for (auto&& commandMap : deviceMap.commandMaps())
-					{
-						if (std::equal(commandMap.first.begin(), commandMap.first.end(), messageBytes.begin()))
-						{
-							sendMessageToDevices(deviceMap, commandMap.second);
-						}
-					}
+					sendMessagesToDevices(deviceMap, messageBytes);
 				}
 			}
 		}

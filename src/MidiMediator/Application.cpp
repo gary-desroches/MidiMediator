@@ -19,6 +19,10 @@
 	std::string const Application::ConfigPath = "/etc/MidiMediator.json";
 #endif
 
+const std::string Application::ApplicationName = "MidiMediator";
+const int32_t Application::MajorVersion = 0;
+const int32_t Application::MinorVersion = 2;
+
 Application::Application(int argc, char* argv[]) :
 	m_config(ConfigPath)
 {
@@ -70,7 +74,8 @@ std::string trimNumericSuffix(std::string const& deviceName);
 
 int Application::run()
 {
-	std::cout << "Using " << ApiName << " as the MIDI API." << std::endl;
+	std::cout << ApplicationName << " v" << MajorVersion << "." << MinorVersion << '\n';
+	std::cout << "Using " << ApiName << " as the MIDI API.\n";
 
 	try
 	{
