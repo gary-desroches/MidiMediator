@@ -31,6 +31,11 @@ MidiDeviceMapping::MidiDeviceMapping(std::string const& name, std::string const&
 	return m_passthrough;
 }
 
+[[nodiscard]] int32_t MidiDeviceMapping::multiMessageSendDelay() const
+{
+	return m_multiMessageSendDelay;
+}
+
 [[nodiscard]] MidiDeviceMapping::command_map_t const& MidiDeviceMapping::commandMaps() const
 {
 	return m_commandMaps;

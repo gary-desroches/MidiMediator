@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RevolvingCollection.hpp"
+
 #include <string>
 #include <vector>
 #include <utility>
@@ -10,8 +12,10 @@ public:
 	typedef std::vector<
 		std::pair<
 			std::vector<uint8_t>,
-			std::vector<
-				std::vector<uint8_t>
+			RevolvingCollection<
+				std::vector<
+					std::vector<uint8_t>
+				>
 			>
 		>
 	> command_map_t;
@@ -24,6 +28,7 @@ public:
 	std::string const& inputDeviceName() const;
 	std::vector< std::string > const& outputDeviceNames() const;
 	bool passthrough() const;
+	int32_t multiMessageSendDelay() const;
 	command_map_t const& commandMaps() const;
 
 private:

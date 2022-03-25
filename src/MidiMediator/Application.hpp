@@ -30,6 +30,9 @@ private:
     static std::string const ApiName;
     static std::string const ConfigPath;
     static RtMidi::Api const Api;
+    static std::string const ApplicationName;
+    static int32_t const MajorVersion;
+    static int32_t const MinorVersion;
 
     std::vector<std::string> m_arguments;
     std::vector<std::string> m_inputDevices;
