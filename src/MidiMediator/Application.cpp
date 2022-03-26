@@ -21,7 +21,7 @@
 
 const std::string Application::ApplicationName = "MidiMediator";
 const int32_t Application::MajorVersion = 0;
-const int32_t Application::MinorVersion = 2;
+const int32_t Application::MinorVersion = 3;
 
 Application::Application(int argc, char* argv[]) :
 	m_config(ConfigPath)
@@ -88,7 +88,14 @@ int Application::run()
 			}
 		}
 
-		MidiDeviceMapper mapper(Api, m_config.queueSizeLimit(), m_config.deviceMaps(), m_config.matchUniqueDeviceNames());
+		MidiDeviceMapper mapper(
+			Api, 
+			m_config.queueSizeLimit(), 
+			m_config.deviceMaps(), 
+			m_config.matchUniqueDeviceNames(), 
+			m_config.commandMapsToReset()
+		);
+
 		mapper.listen();
 	}
 	catch (RtMidiError& error)

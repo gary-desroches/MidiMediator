@@ -1,5 +1,6 @@
 #include "pch.hpp"
 #include "Configuration.hpp"
+#include "CommandMap.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -34,19 +35,19 @@ static bool tryGetJsonArray(json11::Json const& node, std::string const& name, j
 {
 	if (!node.is_object())
 	{
-		std::cout << __PRETTY_FUNCTION__ << ": JSON node is not an object.\n";
+		//std::cout << __PRETTY_FUNCTION__ << ": JSON node is not an object.\n";
 		return false;
 	}
 
 	if (node.object_items().find(name) == node.object_items().end())
 	{
-		std::cout << __PRETTY_FUNCTION__ << ": JSON node does not contain the child named \"" << name << "\".\n";
+		//std::cout << __PRETTY_FUNCTION__ << ": JSON node does not contain the child named \"" << name << "\".\n";
 		return false;
 	}
 
 	if (!node[name].is_array())
 	{
-		std::cout << __PRETTY_FUNCTION__ << ": JSON node is not an array.\n";
+		//std::cout << __PRETTY_FUNCTION__ << ": JSON node is not an array.\n";
 		return false;
 	}
 
@@ -59,26 +60,26 @@ static bool tryGetJsonValue(json11::Json const& node, std::string const& name, s
 {
 	if (!node.is_object())
 	{
-		std::cout << __PRETTY_FUNCTION__ << ": node is not an object." << '\n';
+		//std::cout << __PRETTY_FUNCTION__ << ": node is not an object." << '\n';
 		if (node.is_null())
 		{
-			std::cout << __PRETTY_FUNCTION__ << ": node is null." << '\n';
+			//std::cout << __PRETTY_FUNCTION__ << ": node is null." << '\n';
 		}
 		else if (node.is_array())
 		{
-			std::cout << __PRETTY_FUNCTION__ << ": node is an array." << '\n';
+			//std::cout << __PRETTY_FUNCTION__ << ": node is an array." << '\n';
 		}
 		else if (node.is_bool())
 		{
-			std::cout << __PRETTY_FUNCTION__ << ": node is a boolean." << '\n';
+			//std::cout << __PRETTY_FUNCTION__ << ": node is a boolean." << '\n';
 		}
 		else if (node.is_number())
 		{
-			std::cout << __PRETTY_FUNCTION__ << ": node is a number." << '\n';
+			//std::cout << __PRETTY_FUNCTION__ << ": node is a number." << '\n';
 		}
 		else if (node.is_string())
 		{
-			std::cout << __PRETTY_FUNCTION__ << ": node is a string." << '\n';
+			//std::cout << __PRETTY_FUNCTION__ << ": node is a string." << '\n';
 		}
 
 		return false;
@@ -86,13 +87,13 @@ static bool tryGetJsonValue(json11::Json const& node, std::string const& name, s
 
 	if (node.object_items().find(name) == node.object_items().end())
 	{
-		std::cout << __PRETTY_FUNCTION__ << ": Could not find value " << name << " in node." << '\n';
+		//std::cout << __PRETTY_FUNCTION__ << ": Could not find value " << name << " in node." << '\n';
 		return false;
 	}
 
 	if (node[name].is_array() || node[name].is_null() || node[name].is_object())
 	{
-		std::cout << __PRETTY_FUNCTION__ << ": JSON node is not an object.\n";
+		//std::cout << __PRETTY_FUNCTION__ << ": JSON node is not an object.\n";
 		return false;
 	}
 
@@ -234,27 +235,33 @@ MidiDeviceMapping::command_map_t Configuration::parseCommandMaps(json11::Json co
 			}
 
 			commandMaps.push_back(
-				std::pair<
-					std::vector<uint8_t>,
-					RevolvingCollection<
-						std::vector<
-							std::vector<uint8_t>
-						>
-					>
-				>()
+				CommandMap()
 			);
 
-			splitToNumbers(getJsonValue(commandNode, "in"), commandMaps.back().first);
+			splitToNumbers(getJsonValue(commandNode, "in"), commandMaps.back().inputMessage());
 			
 			auto outNodeArray = getJsonArray(commandNode, "out");
 			for (auto&& outNode : outNodeArray.array_items())
 			{
-				commandMaps.back().second.push_back({});
+				commandMaps.back().outputMessages().push_back({});
 				for (auto&& outMessagesNode : outNode.array_items())
 				{
-					commandMaps.back().second.back().push_back({});
-					splitToNumbers(outMessagesNode.string_value(), commandMaps.back().second.back().back());
+					commandMaps.back().outputMessages().back().push_back({});
+					splitToNumbers(outMessagesNode.string_value(), commandMaps.back().outputMessages().back().back());
 				}
+			}
+
+			bool resetWhenAway = false;
+			std::string resetWhenAwayText;
+			if (tryGetJsonValue(commandNode, "resetWhenAway", resetWhenAwayText))
+			{
+				resetWhenAway = boost::iequals(resetWhenAwayText, "true");
+			}
+
+			commandMaps.back().resetWhenAway() = resetWhenAway;
+			if (resetWhenAway)
+			{
+				m_commandMapsToReset.push_back(commandMaps.back());
 			}
 		}
 
@@ -336,4 +343,9 @@ uint32_t Configuration::queueSizeLimit() const
 bool Configuration::matchUniqueDeviceNames() const
 {
 	return m_matchUniqueDeviceNames;
+}
+
+const std::vector<CommandMap>& Configuration::commandMapsToReset() const
+{
+	return m_commandMapsToReset;
 }

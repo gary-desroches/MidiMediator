@@ -47,6 +47,12 @@ public:
 		return self.m_items[self.m_index];
 	}
 
+	void reset() const
+	{
+		m_first = true;
+		m_index = 0;
+	}
+
 	[[nodiscard]] decltype(auto) next()
 	{
 		return get_next(*this);

@@ -3,6 +3,7 @@
 #include "MidiPort.hpp"
 
 #include <functional>
+#include <memory>
 
 class InputMidiPort : public MidiPort
 {
@@ -11,14 +12,9 @@ public:
 
 public:
     InputMidiPort(RtMidiIn& midi, std::string const& name, uint8_t const port);
-
-public:
     InputMidiPort(InputMidiPort const& source) = delete;
-    InputMidiPort& operator=(InputMidiPort const& source) = delete;
-
-public:
     InputMidiPort(InputMidiPort&& source) noexcept;
-    //InputMidiPort& operator=(InputMidiPort&& source) noexcept;
+    InputMidiPort& operator=(InputMidiPort const& source) = delete;
 
 public:
     void open(callback_t callback);
@@ -28,5 +24,6 @@ private:
     void onIncomingMessage(double const /* timeStamp */, std::vector<uint8_t> const& messageBytes);
 
 private:
-    callback_t m_callback;
+    std::unique_ptr<callback_t> m_callback;
+    bool m_init;
 };

@@ -1,25 +1,30 @@
 #include "pch.hpp"
 #include "InputMidiPort.hpp"
 
+#include <sstream>
+
 InputMidiPort::InputMidiPort(RtMidiIn& midi, std::string const& name, uint8_t const port) :
     MidiPort(midi, name, port),
-	m_callback(nullptr)
+	m_callback(nullptr),
+	m_init(false)
 {
 }
 
 InputMidiPort::InputMidiPort(InputMidiPort&& source) noexcept :
     MidiPort(std::move(source)),
-	m_callback(std::move(source.m_callback))
+	m_callback(std::move(source.m_callback)),
+	m_init(source.m_init)
 {
+	source.m_callback.reset(nullptr);
+	if (m_callback)
+	{
+		static_cast<RtMidiIn&>(midi()).cancelCallback();
+		static_cast<RtMidiIn&>(midi()).setCallback(
+			&InputMidiPort::onIncomingMessage,
+			this
+		);
+	}
 }
-
-/*
-InputMidiPort& InputMidiPort::operator=(InputMidiPort&& source) noexcept
-{
-	m_callback = source.m_callback;
-    return static_cast<InputMidiPort&>(MidiPort::operator=(std::move(source)));
-}
-*/
 
 void InputMidiPort::open(callback_t callback)
 {
@@ -27,7 +32,14 @@ void InputMidiPort::open(callback_t callback)
 	{
 		if (!isOpen())
 		{
-			m_callback = callback;
+			m_callback.reset(new callback_t(callback));
+			if (!m_callback)
+			{
+				std::stringstream errorMessage;
+				errorMessage << __PRETTY_FUNCTION__ << ": m_callback ptr is null";
+				throw std::logic_error(errorMessage.str());
+			}
+			m_init = true;
 			static_cast<RtMidiIn&>(midi()).setCallback(
 				&InputMidiPort::onIncomingMessage,
 				this
@@ -51,5 +63,12 @@ void InputMidiPort::onIncomingMessage(double timeStamp, std::vector<uint8_t>* me
 
 void InputMidiPort::onIncomingMessage(double const timeStamp, std::vector<uint8_t> const& messageBytes)
 {
-	m_callback(*this, timeStamp, messageBytes);
+	if (!m_callback)
+	{
+		std::stringstream errorMessage;
+		errorMessage << __PRETTY_FUNCTION__ << ": m_callback ptr is null";
+		throw std::logic_error(errorMessage.str());
+	}
+
+	(*m_callback)(*this, timeStamp, messageBytes);
 }

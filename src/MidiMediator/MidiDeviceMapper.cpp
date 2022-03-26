@@ -7,12 +7,13 @@
 #include <sstream>
 #include <thread>
 
-MidiDeviceMapper::MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps, bool matchUniqueDeviceNames) :
+MidiDeviceMapper::MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps, bool matchUniqueDeviceNames, const std::vector<CommandMap>& commandMapsToReset) :
 	m_api(api),
 	m_queueSizeLimit(queueSizeLimit),
 	m_deviceMaps(deviceMaps),
 	m_initialized(false),
-	m_matchUniqueDeviceNames(matchUniqueDeviceNames)
+	m_matchUniqueDeviceNames(matchUniqueDeviceNames),
+	m_commandMapsToReset(commandMapsToReset)
 {
 }
 
@@ -242,14 +243,14 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 				bool messagesSent = false;
 				for (auto&& commandMap : deviceMap.commandMaps())
 				{
-					if (std::equal(commandMap.first.begin(), commandMap.first.end(), messageBytes.begin()))
+					if (std::equal(commandMap.inputMessage().begin(), commandMap.inputMessage().end(), messageBytes.begin()))
 					{
 						if (deviceMap.passthrough())
 						{
 							std::cout << "Exception to passthrough found.\n";
 						}
 
-						const auto outputMessages = commandMap.second.next();
+						const auto outputMessages = commandMap.outputMessages().next();
 						std::vector< std::vector<uint8_t> >::const_iterator lastIt =
 							std::prev(outputMessages.end());
 
@@ -274,6 +275,14 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 					std::cout << "Passing through...\n";
 					sendMessagesToDevices(deviceMap, messageBytes);
 				}
+			}
+		}
+
+		for (auto&& commandMapToReset : m_commandMapsToReset)
+		{
+			if (!boost::equals(commandMapToReset.inputMessage(), messageBytes))
+			{
+				commandMapToReset.outputMessages().reset();
 			}
 		}
 	}

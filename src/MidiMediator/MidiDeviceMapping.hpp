@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CommandMap.hpp"
 #include "RevolvingCollection.hpp"
 
 #include <string>
@@ -9,16 +10,7 @@
 class MidiDeviceMapping
 {
 public: 
-	typedef std::vector<
-		std::pair<
-			std::vector<uint8_t>,
-			RevolvingCollection<
-				std::vector<
-					std::vector<uint8_t>
-				>
-			>
-		>
-	> command_map_t;
+	typedef std::vector<CommandMap> command_map_t;
 
 public:
 	MidiDeviceMapping(std::string const& name, std::string const& inputDeviceName, std::vector<std::string> const& outputDeviceNames, bool passthrough, int32_t multiMessageSendDelay, command_map_t const& commandMaps);

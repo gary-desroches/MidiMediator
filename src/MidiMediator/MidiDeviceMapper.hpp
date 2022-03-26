@@ -8,7 +8,7 @@
 class MidiDeviceMapper
 {
 public:
-	MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps, bool matchUniqueDeviceNames);
+	MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps, bool matchUniqueDeviceNames, const std::vector<CommandMap>& commandMapsToReset);
 
 public:
 	void listen();
@@ -28,6 +28,7 @@ private:
 	RtMidi::Api m_api;
 	uint32_t m_queueSizeLimit;
 	bool m_matchUniqueDeviceNames;
+	const std::vector<CommandMap>& m_commandMapsToReset;
 
 	std::vector<InputMidiDevice> m_inputDevices;
 	std::vector<OutputMidiDevice> m_outputDevices;
