@@ -92,8 +92,7 @@ int Application::run()
 			Api, 
 			m_config.queueSizeLimit(), 
 			m_config.deviceMaps(), 
-			m_config.matchUniqueDeviceNames(), 
-			m_config.commandMapsToReset()
+			m_config.matchUniqueDeviceNames()
 		);
 
 		mapper.listen();

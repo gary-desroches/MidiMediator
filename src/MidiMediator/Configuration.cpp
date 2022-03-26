@@ -259,10 +259,6 @@ MidiDeviceMapping::command_map_t Configuration::parseCommandMaps(json11::Json co
 			}
 
 			commandMaps.back().resetWhenAway() = resetWhenAway;
-			if (resetWhenAway)
-			{
-				m_commandMapsToReset.push_back(commandMaps.back());
-			}
 		}
 
 		return commandMaps;
@@ -343,9 +339,4 @@ uint32_t Configuration::queueSizeLimit() const
 bool Configuration::matchUniqueDeviceNames() const
 {
 	return m_matchUniqueDeviceNames;
-}
-
-const std::vector<CommandMap>& Configuration::commandMapsToReset() const
-{
-	return m_commandMapsToReset;
 }

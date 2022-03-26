@@ -24,7 +24,7 @@ public:
     std::vector<MidiDeviceMapping> const& deviceMaps() const;
     uint32_t queueSizeLimit() const;
     bool matchUniqueDeviceNames() const;
-    const std::vector<CommandMap>& commandMapsToReset() const;
+    const std::vector<CommandMap*>& commandMapsToReset() const;
 
 private:
     void initialize();
@@ -38,7 +38,6 @@ private:
     uint32_t m_queueSizeLimit;
     bool m_matchUniqueDeviceNames;
     std::vector<MidiDeviceMapping> m_deviceMaps;
-    std::vector<CommandMap> m_commandMapsToReset;
 
     static std::string const InputFieldName;
     static std::string const OutputsFieldName;

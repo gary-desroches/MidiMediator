@@ -49,6 +49,11 @@ public:
 
 	void reset() const
 	{
+		if (m_index > 2)
+		{
+			int bp = 0;
+			bp = bp;
+		}
 		m_first = true;
 		m_index = 0;
 	}

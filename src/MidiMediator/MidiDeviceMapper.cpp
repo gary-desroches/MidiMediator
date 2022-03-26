@@ -7,13 +7,12 @@
 #include <sstream>
 #include <thread>
 
-MidiDeviceMapper::MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps, bool matchUniqueDeviceNames, const std::vector<CommandMap>& commandMapsToReset) :
+MidiDeviceMapper::MidiDeviceMapper(RtMidi::Api api, uint32_t queueSizeLimit, std::vector<MidiDeviceMapping> const& deviceMaps, bool matchUniqueDeviceNames) :
 	m_api(api),
 	m_queueSizeLimit(queueSizeLimit),
 	m_deviceMaps(deviceMaps),
 	m_initialized(false),
-	m_matchUniqueDeviceNames(matchUniqueDeviceNames),
-	m_commandMapsToReset(commandMapsToReset)
+	m_matchUniqueDeviceNames(matchUniqueDeviceNames)
 {
 }
 
@@ -278,11 +277,17 @@ void MidiDeviceMapper::onIncomingMessage(InputMidiPort& inputMidiPort, double co
 			}
 		}
 
-		for (auto&& commandMapToReset : m_commandMapsToReset)
+		for (auto&& deviceMap : m_deviceMaps)
 		{
-			if (!boost::equals(commandMapToReset.inputMessage(), messageBytes))
+			for (auto&& commandMap : deviceMap.commandMaps())
 			{
-				commandMapToReset.outputMessages().reset();
+				if (commandMap.resetWhenAway())
+				{
+					if (!boost::equals(commandMap.inputMessage(), messageBytes))
+					{
+						commandMap.outputMessages().reset();
+					}
+				}
 			}
 		}
 	}
