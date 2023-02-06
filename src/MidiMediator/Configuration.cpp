@@ -61,7 +61,7 @@ Configuration::Configuration(std::string const& configPath) :
 	initialize();
 }
 
-static bool tryGetJsonArray(json11::Json const& node, std::string const& name, json11::Json& value)
+static [[nodiscard]] bool tryGetJsonArray(json11::Json const& node, std::string const& name, json11::Json& value)
 {
 	if (!node.is_object())
 	{
@@ -86,7 +86,7 @@ static bool tryGetJsonArray(json11::Json const& node, std::string const& name, j
 	return true;
 }
 
-static bool tryGetJsonValue(json11::Json const& node, std::string const& name, std::string& value)
+static [[nodiscard]] bool tryGetJsonValue(json11::Json const& node, std::string const& name, std::string& value)
 {
 	if (!node.is_object())
 	{
@@ -152,7 +152,7 @@ static bool tryGetJsonValue(json11::Json const& node, std::string const& name, s
 	}
 }
 
-static std::string getJsonValue(json11::Json const& node, std::string const& name)
+static [[nodiscard]] std::string getJsonValue(json11::Json const& node, std::string const& name)
 {
 	std::string value;
 	if (!tryGetJsonValue(node, name, value))
@@ -165,7 +165,7 @@ static std::string getJsonValue(json11::Json const& node, std::string const& nam
 	return value;
 }
 
-static int32_t getJsonInt32Value(json11::Json const& node, std::string const& name)
+static [[nodiscard]] int32_t getJsonInt32Value(json11::Json const& node, std::string const& name)
 {
 	std::string value;
 	if (!tryGetJsonValue(node, name, value))
@@ -181,7 +181,7 @@ static int32_t getJsonInt32Value(json11::Json const& node, std::string const& na
 	return static_cast<int32_t>(numericValue);
 }
 
-static json11::Json getJsonArray(json11::Json const& node, std::string const& name)
+static [[nodiscard]] json11::Json getJsonArray(json11::Json const& node, std::string const& name)
 {
 	json11::Json value;
 	if (!tryGetJsonArray(node, name, value))
@@ -217,7 +217,7 @@ static void splitToNumbers(std::string const text, std::vector<uint8_t>& numbers
 	}
 }
 
-json11::Json Configuration::readJsonFromFile()
+[[nodiscard]] json11::Json Configuration::readJsonFromFile()
 {
 	try
 	{
@@ -250,7 +250,7 @@ json11::Json Configuration::readJsonFromFile()
 	}
 }
 
-MidiDeviceMapping::command_map_t Configuration::parseCommandMaps(json11::Json const& deviceMap)
+[[nodiscard]] MidiDeviceMapping::command_map_t Configuration::parseCommandMaps(json11::Json const& deviceMap)
 {
 	try
 	{
@@ -356,17 +356,17 @@ void Configuration::initialize()
     m_initialized = true;
 }
 
-std::vector<MidiDeviceMapping> const& Configuration::deviceMaps() const
+[[nodiscard]] std::vector<MidiDeviceMapping> const& Configuration::deviceMaps() const
 {
 	return m_deviceMaps;
 }
 
-uint32_t Configuration::queueSizeLimit() const
+[[nodiscard]] uint32_t Configuration::queueSizeLimit() const
 {
 	return m_queueSizeLimit;
 }
 
-bool Configuration::matchUniqueDeviceNames() const
+[[nodiscard]] bool Configuration::matchUniqueDeviceNames() const
 {
 	return m_matchUniqueDeviceNames;
 }
