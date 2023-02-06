@@ -81,34 +81,34 @@ void MidiPort::open()
 	m_isOpen = true;
 }
 
-RtMidi& MidiPort::midi()
+[[nodiscard]] RtMidi& MidiPort::midi()
 {
 	return m_midi;
 }
 
-bool MidiPort::isOpen() const
+[[nodiscard]] bool MidiPort::isOpen() const
 {
 	return m_isOpen;
 }
 
-std::string const& MidiPort::deviceName() const
+[[nodiscard]] std::string const& MidiPort::deviceName() const
 {
 	return m_name;
 }
 
-uint8_t MidiPort::port() const
+[[nodiscard]] uint8_t MidiPort::port() const
 {
 	return m_port;
 }
 
 std::string trimNumericSuffix(std::string const& deviceName);
 
-std::string MidiPort::uniqueDeviceName() const
+[[nodiscard]] std::string MidiPort::uniqueDeviceName() const
 {
 	return trimNumericSuffix(m_name);
 }
 
-bool MidiPort::compareName(std::string const& comparison, bool matchUnique)
+[[nodiscard]] bool MidiPort::compareName(std::string const& comparison, bool matchUnique)
 {
 	if (matchUnique)
 	{

@@ -75,22 +75,22 @@ std::string trimNumericSuffix(std::string const& deviceName)
 	throw std::logic_error(errorMessage);
 }
 
-RtMidi& MidiDevice::midi()
+[[nodiscard]] RtMidi& MidiDevice::midi()
 {
 	return *m_rtMidi;
 }
 
-RtMidi& MidiDevice::midi() const
+[[nodiscard]] RtMidi& MidiDevice::midi() const
 {
 	return *m_rtMidi;
 }
 
-std::string const& MidiDevice::deviceName() const
+[[nodiscard]] std::string const& MidiDevice::deviceName() const
 {
 	return m_deviceName;
 }
 
-std::string const& MidiDevice::configName() const
+[[nodiscard]] std::string const& MidiDevice::configName() const
 {
 	return m_configName;
 }
@@ -102,7 +102,7 @@ MidiDevice::MidiDevice(MidiDevice&& source) noexcept :
 {
 }
 
-MidiDevice& MidiDevice::operator=(MidiDevice&& source) noexcept
+[[nodiscard]] MidiDevice& MidiDevice::operator=(MidiDevice&& source) noexcept
 {
 	m_rtMidi = source.m_rtMidi;
 	m_deviceName = std::move(source.m_deviceName);
@@ -117,12 +117,12 @@ void MidiDevice::setMidiPtr(RtMidi* rtMidi)
 
 std::string trimNumericSuffix(std::string const& deviceName);
 
-std::string MidiDevice::uniqueDeviceName() const
+[[nodiscard]] std::string MidiDevice::uniqueDeviceName() const
 {
 	return trimNumericSuffix(m_deviceName);
 }
 
-bool MidiDevice::compareName(std::string const& comparison, bool matchUnique)
+[[nodiscard]] bool MidiDevice::compareName(std::string const& comparison, bool matchUnique)
 {
 	if (matchUnique)
 	{

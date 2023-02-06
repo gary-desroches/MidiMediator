@@ -33,7 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <cassert>
 
-std::array< std::pair< uint8_t, uint8_t>, 19> const MidiMessage::DataLengths =
+constexpr std::array< std::pair< uint8_t, uint8_t>, 19> const MidiMessage::DataLengths =
 {{
 	{ static_cast<uint8_t>(MidiMessageCode::NoteOff), static_cast<uint8_t>(2U) },
 	{ static_cast<uint8_t>(MidiMessageCode::NoteOn), static_cast<uint8_t>(2U) },
@@ -56,7 +56,7 @@ std::array< std::pair< uint8_t, uint8_t>, 19> const MidiMessage::DataLengths =
 	{ static_cast<uint8_t>(MidiMessageCode::SystemExclusiveEnd), static_cast<uint8_t>(0U) }
 }};
 
-std::array< std::pair<uint8_t, bool>, 19 > const MidiMessage::ChannelCommands =
+constexpr std::array< std::pair<uint8_t, bool>, 19 > const MidiMessage::ChannelCommands =
 {{
 	{ static_cast<uint8_t>(MidiMessageCode::NoteOff), true },
 	{ static_cast<uint8_t>(MidiMessageCode::NoteOn), true },
@@ -147,19 +147,19 @@ void MidiMessage::validate() const
 	}
 }
 
-uint8_t MidiMessage::channel() const
+[[nodiscard]] uint8_t MidiMessage::channel() const
 {
 	assert(!m_invalidated);
 	return m_channel;
 }
 
-MidiMessageCode MidiMessage::code() const
+[[nodiscard]] MidiMessageCode MidiMessage::code() const
 {
 	assert(!m_invalidated);
 	return static_cast<MidiMessageCode>(m_code);
 }
 
-std::vector<uint8_t> const& MidiMessage::data() const
+[[nodiscard]] std::vector<uint8_t> const& MidiMessage::data() const
 {
 	assert(!m_invalidated);
 	return m_data;
@@ -197,7 +197,7 @@ MidiMessage::MidiMessage(MidiMessage&& source) noexcept :
 	source.m_invalidated = true;
 }
 
-MidiMessage& MidiMessage::operator=(MidiMessage&& source) noexcept
+[[nodiscard]] MidiMessage& MidiMessage::operator=(MidiMessage&& source) noexcept
 {
 	m_invalidated = false;
 	m_channel = source.m_channel;

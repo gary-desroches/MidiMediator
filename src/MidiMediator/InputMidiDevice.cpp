@@ -38,7 +38,7 @@ InputMidiDevice::InputMidiDevice(RtMidi::Api api, std::string const& rtMidiDevic
 	setMidiPtr(m_rtMidiIn.get());
 }
 
-InputMidiPort InputMidiDevice::openPort()
+[[nodiscard]] InputMidiPort InputMidiDevice::openPort()
 {
 	return InputMidiPort(static_cast<RtMidiIn&>(midi()), deviceName(), findPortNumber());
 }

@@ -51,16 +51,17 @@ CommandMap::CommandMap(
 {
 }
 
-std::vector<uint8_t>& CommandMap::inputMessage()
+[[nodiscard]] std::vector<uint8_t>& CommandMap::inputMessage()
 {
 	return m_inputMessage;
 }
 
-const std::vector<uint8_t>& CommandMap::inputMessage() const
+[[nodiscard]] const std::vector<uint8_t>& CommandMap::inputMessage() const
 {
 	return m_inputMessage;
 }
 
+[[nodiscard]]
 RevolvingCollection<
 	std::vector<
 	std::vector<uint8_t>
@@ -71,6 +72,7 @@ CommandMap::outputMessages()
 	return m_outputMessages;
 }
 
+[[nodiscard]]
 const RevolvingCollection<
 	std::vector<
 	std::vector<uint8_t>
@@ -81,12 +83,12 @@ CommandMap::outputMessages() const
 	return m_outputMessages;
 }
 
-bool& CommandMap::resetWhenAway()
+[[nodiscard]] bool& CommandMap::resetWhenAway()
 {
 	return m_resetWhenAway;
 }
 
-bool CommandMap::resetWhenAway() const
+[[nodiscard]] bool CommandMap::resetWhenAway() const
 {
 	return m_resetWhenAway;
 }

@@ -27,13 +27,16 @@
 # CMakeList.txt : CMake project for MidiMediator, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.18)
+cmake_minimum_required (VERSION 3.22)
 
 include_directories(${VCPKG_INCLUDE_DIR})
 #link_libraries(${VCPKG_LIB_DIR})
 
 # Add source to this project's executable.
 add_executable (MidiMediator "main.cpp" "Application.cpp" "Application.hpp" "Configuration.cpp" "Configuration.hpp" "InputMidiDevice.cpp" "InputMidiDevice.hpp" "InputMidiPort.cpp" "InputMidiPort.hpp" "MessageDirection.hpp" "MidiDevice.cpp" "MidiDevice.hpp" "MidiDeviceMapper.cpp" "MidiDeviceMapper.hpp" "MidiDeviceMapping.cpp" "MidiDeviceMapping.hpp" "MidiMessage.cpp" "MidiMessage.hpp" "MidiPort.cpp" "MidiPort.hpp" "OutputMidiDevice.cpp" "OutputMidiDevice.hpp" "OutputMidiPort.cpp" "OutputMidiPort.hpp" "pch.cpp" "pch.hpp" "targetver.hpp" "json11.cpp" "json11.hpp" "RevolvingCollection.hpp" "RevolvingCollection.cpp" "CommandMap.hpp" "CommandMap.cpp")
+
+set(CMAKE_CXX_STANDARD 20)
+target_compile_features(MidiMediator PUBLIC cxx_std_20)
 
 # TODO: Add tests and install targets if needed.
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")

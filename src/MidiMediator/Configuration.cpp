@@ -356,17 +356,17 @@ void Configuration::initialize()
     m_initialized = true;
 }
 
-std::vector<MidiDeviceMapping> const& Configuration::deviceMaps() const
+[[nodiscard]] std::vector<MidiDeviceMapping> const& Configuration::deviceMaps() const
 {
 	return m_deviceMaps;
 }
 
-uint32_t Configuration::queueSizeLimit() const
+[[nodiscard]] uint32_t Configuration::queueSizeLimit() const
 {
 	return m_queueSizeLimit;
 }
 
-bool Configuration::matchUniqueDeviceNames() const
+[[nodiscard]] bool Configuration::matchUniqueDeviceNames() const
 {
 	return m_matchUniqueDeviceNames;
 }
